@@ -177,7 +177,7 @@ bool safeToChange(vector<vector<double>> sensor_fusion, int target_lane, double 
 
             if (i_distance > (loop_length/2.0)) {i_distance -= loop_length;} // deal with wrapping problems
             else if (i_distance < (-1.0*loop_length/2.0)) {i_distance += loop_length;}
-            if ((i_distance > (20-safe_distance) && i_distance < 0) || (i_distance > 0 && i_distance < safe_distance + nice*safe_distance)) {
+            if ((i_distance > (25-safe_distance) && i_distance < 0) || (i_distance > 0 && i_distance < safe_distance -5 + nice*safe_distance)) {
                 cout << "False" << endl; // just some residue from debugging
                 return false;
             }
@@ -227,7 +227,7 @@ int main() {
 
     int current_lane = 1;
     double ref_speed = 0;
-    #define distance_interval 30.0 // use #define to use less RAM, and I like this instead of constants
+    #define distance_interval 35.0 // use #define to use less RAM, and I like this instead of constants
     #define max_speed 4.95
     bool lane_change = false;
     h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy, &ref_speed,
@@ -307,11 +307,11 @@ int main() {
                                 would_be_nice = true;
                                 lane_change = true;
                             }
-                            if (((i_distance > 0) && (i_distance < distance_interval - 2))) { // is car too close
+                            if (((i_distance > 0) && (i_distance < distance_interval))) { // is car too close
                                 too_close = true;
                                 would_be_nice = false;
                                 lane_change = true;
-                                if (i_distance < distance_interval/4.0) { // holy crap the car is way to close
+                                if (i_distance < distance_interval/3.0) { // holy crap the car is way to close
                                     emg_break = true;
                                     lane_change = true;
                                 }
@@ -320,8 +320,8 @@ int main() {
                         }
                     }
                     if (emg_break) { // the car is way to close, safety first and not comfort
-                        if (ref_speed > 2.5) {
-                            ref_speed -= 2.5;
+                        if (ref_speed > 2.0) {
+                            ref_speed -= 2.0;
                         } else {
                             ref_speed = 0.01;
                         }
